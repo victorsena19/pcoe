@@ -44,8 +44,8 @@ public class CaixaController {
     }
 
     @PostMapping(path = "/fechar/{id}")
-    public ResponseEntity<CaixaDTO> fecharCaixa(@PathVariable UUID id, @RequestBody CaixaDTO caixa){
-        CaixaDTO caixaFechado = caixaService.fecharCaixa(id,caixa);
+    public ResponseEntity<CaixaDTO> fecharCaixa(@PathVariable UUID id){
+        CaixaDTO caixaFechado = caixaService.fecharCaixa(id);
         return  ResponseEntity.ok().body(caixaFechado);
     }
 

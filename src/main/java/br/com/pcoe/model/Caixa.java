@@ -24,16 +24,13 @@ public class Caixa implements Serializable {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "usuario_id")
-    @JsonManagedReference
     private Usuario usuario;
 
-    @OneToMany(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "caixa_movimento_id")
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<CaixaMovimento> caixaMovimento;
 
-    @OneToMany(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "caixa_movimento_especialidade_id")
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<CaixaMovimentoEspecialidade> caixaMovimentoEspecialidade;
 

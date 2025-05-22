@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class CaixaService {
@@ -86,7 +88,8 @@ public class CaixaService {
         caixaDTO.setValorQuebra(BigDecimal.ZERO);
         caixaDTO.setValorRetirada(BigDecimal.ZERO);
         caixaDTO.setAberto(true);
-        caixaDTO.setCaixaMovimento(List.of());
+        caixaDTO.setCaixaMovimento(new ArrayList<>());
+        caixaDTO.setCaixaMovimentoEspecialidade(new ArrayList<>());
         Caixa novaCaixa = caixaMapper.toEntity(caixaDTO);
         Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         novaCaixa.setUsuario(usuario);
@@ -95,29 +98,32 @@ public class CaixaService {
     }
 
     public CaixaDTO movimentoCaixa(UUID id, CaixaDTO caixaDTO){
-        Caixa caixa = caixaRepository.findById(id)
+        Caixa caixaExistente = caixaRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("Não foi possivel encontrar um caixa com esse ID: " + id));
-        Caixa novoCaixa = caixaMapper.toEntity(caixaDTO);
 
-        List<CaixaMovimento> listaMovimento = novoCaixa.getCaixaMovimento().stream().map((movimento) -> {
+        List<CaixaMovimento> listaMovimento = caixaDTO.getCaixaMovimento().stream().map((movimento) -> {
             FormaPagamento formaPagamento = formaPagamentoRepository.findById(movimento.getFormaPagamento().getId())
                         .orElseThrow(()-> new IllegalArgumentException("Não foi possivel encontrar uma forma de pagamento com esse ID: " + movimento.getFormaPagamento().getId()));
             CaixaMovimento caixaMovimento = new CaixaMovimento();
             caixaMovimento.setFormaPagamento(formaPagamento);
             caixaMovimento.setValorMovimento(movimento.getValorMovimento());
+            caixaMovimento.setCaixa(caixaExistente);
             return caixaMovimento;
-        }).toList();
+        }).collect(Collectors.toList());;
 
-        List<CaixaMovimentoEspecialidade> listaMovimentoEspecialidade = novoCaixa.getCaixaMovimentoEspecialidade().stream().map((movimentoEspecialidade) -> {
+        caixaExistente.setCaixaMovimento(listaMovimento);
+
+        List<CaixaMovimentoEspecialidade> listaMovimentoEspecialidade = caixaDTO.getCaixaMovimentoEspecialidade().stream().map((movimentoEspecialidade) -> {
             Especialidade especialidade = especialidadeRepository.findById(movimentoEspecialidade.getEspecialidade().getId())
                     .orElseThrow(()-> new IllegalArgumentException("Não foi possivel encontrar uma especialidade com esse ID: " + movimentoEspecialidade.getEspecialidade().getId()));
             CaixaMovimentoEspecialidade caixaMovimentoEspecialidade = new CaixaMovimentoEspecialidade();
             caixaMovimentoEspecialidade.setEspecialidade(especialidade);
             caixaMovimentoEspecialidade.setValorMovimento(movimentoEspecialidade.getValorMovimento());
+            caixaMovimentoEspecialidade.setCaixa(caixaExistente);
             return caixaMovimentoEspecialidade;
-        }).toList();
+        }).collect(Collectors.toList());
 
-        if(caixa.getUsuario().getId().equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal()) ||
+        if(caixaExistente.getUsuario().getId().equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal()) ||
                 !SecurityContextHolder
                         .getContext()
                         .getAuthentication().getAuthorities()
@@ -126,14 +132,20 @@ public class CaixaService {
             throw new RuntimeException("Não foi possivel movimentar esse caixa pois voce não é Admin ou não foi você que lançou esse caixa");
         }
 
-        novoCaixa.setCaixaMovimento(listaMovimento);
-        novoCaixa.setId(caixa.getId());
 
-        caixaRepository.save(novoCaixa);
-        return caixaMapper.toDTO(novoCaixa);
+        caixaExistente.setCaixaMovimentoEspecialidade(listaMovimentoEspecialidade);
+
+        caixaExistente.setAberto(true);
+        caixaExistente.setValorTotal(caixaDTO.getValorTotal());
+        caixaExistente.setValorRetirada(caixaDTO.getValorRetirada());
+        caixaExistente.setValorQuebra(caixaDTO.getValorQuebra());
+        caixaExistente.setObservacao(caixaDTO.getObservacao());
+
+        Caixa caixaAtualizado = caixaRepository.save(caixaExistente);
+        return caixaMapper.toDTO(caixaAtualizado);
     }
 
-    public CaixaDTO fecharCaixa(UUID id, CaixaDTO caixaDTO){
+    public CaixaDTO fecharCaixa(UUID id){
         Caixa caixa = caixaRepository.findById(id)
                 .orElseThrow(()-> new IllegalArgumentException("Não foi possivel encontrar um caixa com esse ID: " + id));
         if(caixa.getUsuario().getId().equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal()) ||
@@ -144,11 +156,9 @@ public class CaixaService {
                         .getAuthority().equals("ROLE_ADMIN")){
             throw new RuntimeException("Não foi possivel fechar esse caixa pois voce não é Admin ou não foi você que lançou esse caixa");
         }
-        caixaDTO.setAberto(false);
-        Caixa caixaAtualizada = caixaMapper.toEntity(caixaDTO);
-        caixaAtualizada.setId(caixa.getId());
-        Caixa salvarCaixa = caixaRepository.save(caixaAtualizada);
-        return caixaMapper.toDTO(salvarCaixa);
+        caixa.setAberto(false);
+        Caixa caixaSalvo = caixaRepository.save(caixa);
+        return caixaMapper.toDTO(caixaSalvo);
     }
 
     public void deletarCaixa(UUID id){

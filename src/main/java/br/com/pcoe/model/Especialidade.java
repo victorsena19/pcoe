@@ -1,6 +1,7 @@
 package br.com.pcoe.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,9 @@ public class Especialidade implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String nome;
+
     @ManyToMany(cascade = CascadeType.MERGE)
+    @JsonBackReference
     private List<Profissional> profissional;
     private BigDecimal valorPercentual;
 }

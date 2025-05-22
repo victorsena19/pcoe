@@ -22,12 +22,12 @@ public class CaixaMovimento implements Serializable {
     private UUID id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinTable(name = "forma_pagamento")
+    @JoinColumn(name = "forma_pagamento")
     @JsonManagedReference
     private FormaPagamento formaPagamento;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinTable(name = "caixa_id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "caixa_id")
     @JsonBackReference
     private Caixa caixa;
 

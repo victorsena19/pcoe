@@ -21,12 +21,12 @@ public class CaixaMovimentoEspecialidade {
     private UUID id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinTable(name = "especialidade_id")
+    @JoinColumn(name = "especialidade_id")
     @JsonManagedReference
     private Especialidade especialidade;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinTable(name = "caixa_id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "caixa_id")
     @JsonBackReference
     private Caixa caixa;
 
