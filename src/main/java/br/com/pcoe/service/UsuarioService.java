@@ -1,5 +1,6 @@
 package br.com.pcoe.service;
 
+import br.com.pcoe.dto.ListarUsuarioDTO;
 import br.com.pcoe.dto.UsuarioDTO;
 import br.com.pcoe.mapper.UsuarioMapper;
 import br.com.pcoe.model.Usuario;
@@ -30,15 +31,15 @@ public class UsuarioService implements UserDetailsService {
             return usuarioRepository.findByEmail(email);
         }
 
-        public List<UsuarioDTO> listarUsuarios(){
+        public List<ListarUsuarioDTO> listarUsuarios(){
             List<Usuario> usuario = usuarioRepository.findAll();
-            return usuarioMapper.toDTO(usuario);
+            return usuarioMapper.listaUsuarioToDTO(usuario);
         }
 
-        public UsuarioDTO ListarUsuarioId(UUID id){
+        public ListarUsuarioDTO ListarUsuarioId(UUID id){
             Usuario usuario = usuarioRepository.findById(id)
                     .orElseThrow(()-> new IllegalArgumentException("Não foi possivel encontrar um usuario com esse ID: " + id));
-            return usuarioMapper.toDTO(usuario);
+            return usuarioMapper.listaUsuarioIdToDTO(usuario);
         }
 
         public UsuarioDTO cadastroUsuario(UsuarioDTO usuarioDTO){

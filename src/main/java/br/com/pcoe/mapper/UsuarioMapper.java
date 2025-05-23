@@ -1,5 +1,6 @@
 package br.com.pcoe.mapper;
 
+import br.com.pcoe.dto.ListarUsuarioDTO;
 import br.com.pcoe.dto.UsuarioDTO;
 import br.com.pcoe.model.Usuario;
 import org.mapstruct.Mapper;
@@ -11,4 +12,7 @@ public interface UsuarioMapper {
     UsuarioDTO toDTO(Usuario usuario);
     List<UsuarioDTO> toDTO(List<Usuario> usuarios);
     Usuario toEntity(UsuarioDTO usuarioDTO);
+
+    List<ListarUsuarioDTO> listaUsuarioToDTO(List<Usuario> usuarios);
+    ListarUsuarioDTO listaUsuarioIdToDTO(Usuario usuario);
 }

@@ -27,6 +27,7 @@ public class FolhaPagamento implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JsonManagedReference
     private Profissional profissional;
+
     private BigDecimal valorBase;
     private BigDecimal valorAcrescimo;
     private BigDecimal valorDesconto;

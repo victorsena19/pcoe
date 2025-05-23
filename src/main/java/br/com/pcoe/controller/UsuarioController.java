@@ -1,5 +1,6 @@
 package br.com.pcoe.controller;
 
+import br.com.pcoe.dto.ListarUsuarioDTO;
 import br.com.pcoe.dto.UsuarioDTO;
 import br.com.pcoe.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,13 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<UsuarioDTO> listarUsuarios(){
+    public List<ListarUsuarioDTO> listarUsuarios(){
         return usuarioService.listarUsuarios();
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<UsuarioDTO> listarUsuarioId(@PathVariable UUID id){
-        UsuarioDTO registro = usuarioService.ListarUsuarioId(id);
+    public ResponseEntity<ListarUsuarioDTO> listarUsuarioId(@PathVariable UUID id){
+        ListarUsuarioDTO registro = usuarioService.ListarUsuarioId(id);
         return ResponseEntity.ok().body(registro);
     }
 
