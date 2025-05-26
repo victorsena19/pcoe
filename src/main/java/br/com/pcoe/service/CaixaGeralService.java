@@ -19,7 +19,7 @@ public class CaixaGeralService {
     }
 
     public CaixaGeralDTO listarCaixaGerais() {
-        List<CaixaDTO> caixas = caixaService.listarTodosCaixas();
+        List<CaixaDTO> caixas = caixaService.listarCaixas();
 
         BigDecimal totalValor = caixas.stream()
                 .map(CaixaDTO::getValorTotal)
