@@ -10,5 +10,6 @@ import java.util.List;
 public interface CaixaMapper {
     CaixaDTO toDTO(Caixa caixa);
     List<CaixaDTO> toDTO(List<Caixa> caixas);
+    List<Caixa> toEntity(List<CaixaDTO> caixas);
     Caixa toEntity(CaixaDTO caixaDTO);
 }

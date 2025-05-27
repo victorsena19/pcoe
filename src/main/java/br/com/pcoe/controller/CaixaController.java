@@ -27,7 +27,7 @@ public class CaixaController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<CaixaDTO> listarCaixaId(@PathVariable UUID id){
-        CaixaDTO registro = caixaService.ListarCaixaId(id);
+        CaixaDTO registro = caixaService.listarCaixaId(id);
         return ResponseEntity.ok().body(registro);
     }
 
