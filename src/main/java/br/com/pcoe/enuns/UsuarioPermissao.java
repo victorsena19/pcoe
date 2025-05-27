@@ -1,16 +1,16 @@
 package br.com.pcoe.enuns;
 
+import lombok.Getter;
+
+@Getter
 public enum UsuarioPermissao {
     ADMIN("admin"),
     USER("user");
 
-    private String permissao;
+    private final String permissao;
 
     UsuarioPermissao(String permissao){
         this.permissao = permissao;
     }
 
-    public String getPermissao(){
-        return permissao;
-    }
 }
