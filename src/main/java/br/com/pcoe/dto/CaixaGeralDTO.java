@@ -12,9 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CaixaGeralDTO {
-       private UUID id;
         private List<CaixaDTO> caixa;
         private BigDecimal valorTotal;
-        private BigDecimal valorTotalTaxa;
 
 }

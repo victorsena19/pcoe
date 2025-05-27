@@ -27,12 +27,12 @@ public class CaixaGeralController {
     @GetMapping(path = "/data")
     @PreAuthorize("hasRole('ADMIN')")
     public CaixaGeralDTO listarCaixaGeralData(@RequestParam LocalDate data){
-        return caixaGeralService.ListarCaixaGeralData(data);
+        return caixaGeralService.listarCaixaGeralData(data);
     }
 
     @GetMapping(path = "/datas")
     @PreAuthorize("hasRole('ADMIN')")
     public CaixaGeralDTO listarCaixaGeralBetweenData(@RequestParam LocalDate data1, @RequestParam LocalDate data2){
-        return caixaGeralService.ListarCaixaGeralBetweenData(data1, data2);
+        return caixaGeralService.listarCaixaGeralBetweenData(data1, data2);
     }
 }
