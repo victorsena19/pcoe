@@ -4,7 +4,8 @@ import br.com.pcoe.dto.CaixaDTO;
 import br.com.pcoe.dto.CaixaGeralDTO;
 import br.com.pcoe.mapper.CaixaMapper;
 import br.com.pcoe.model.Caixa;
-import br.com.pcoe.utils.Utilitarios;
+import br.com.pcoe.utils.UtilitariosParaCaixa;
+import br.com.pcoe.utils.UtilitariosParaCaixa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +19,10 @@ import java.util.List;
 public class CaixaGeralService {
     private final CaixaService caixaService;
     private final CaixaMapper caixaMapper;
-    private final Utilitarios utilitarios;
+    private final UtilitariosParaCaixa utilitarios;
 
     @Autowired
-    public CaixaGeralService(CaixaService caixaService, CaixaMapper caixaMapper, Utilitarios utilitarios){
+    public CaixaGeralService(CaixaService caixaService, CaixaMapper caixaMapper, UtilitariosParaCaixa utilitarios){
         this.caixaService = caixaService;
         this.caixaMapper = caixaMapper;
         this.utilitarios = utilitarios;

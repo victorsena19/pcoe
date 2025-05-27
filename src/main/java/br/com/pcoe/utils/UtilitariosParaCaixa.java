@@ -11,10 +11,10 @@ import java.util.List;
 
 
 /**
- * Classe utilitária para acesso ao usuário logado e permissões.
+ * Classe utilitária para acesso ao usuário logado e permissões para Caixa.
 **/
 @Component
-public final class Utilitarios {
+public final class UtilitariosParaCaixa {
 
     public Usuario getUsuarioLogado(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

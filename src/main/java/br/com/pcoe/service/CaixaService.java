@@ -7,7 +7,7 @@ import br.com.pcoe.model.*;
 import br.com.pcoe.repository.CaixaRepository;
 import br.com.pcoe.repository.EspecialidadeRepository;
 import br.com.pcoe.repository.FormaPagamentoRepository;
-import br.com.pcoe.utils.Utilitarios;
+import br.com.pcoe.utils.UtilitariosParaCaixa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +24,13 @@ public class CaixaService {
     private final CaixaMapper caixaMapper;
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final EspecialidadeRepository especialidadeRepository;
-    private final Utilitarios utilitarios;
+    private final UtilitariosParaCaixa utilitarios;
 
     @Autowired
     public CaixaService(CaixaRepository caixaRepository, CaixaMapper caixaMapper,
                         FormaPagamentoRepository formaPagamentoRepository,
                         EspecialidadeRepository especialidadeRepository,
-                        Utilitarios utilitarios){
+                        UtilitariosParaCaixa utilitarios){
         this.caixaRepository = caixaRepository;
         this.caixaMapper = caixaMapper;
         this.formaPagamentoRepository = formaPagamentoRepository;
