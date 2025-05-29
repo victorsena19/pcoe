@@ -59,7 +59,7 @@ public class CaixaService {
         if (utilitarios.isAdmin(usuario)) {
             caixas = caixaRepository.findAll();
         } else {
-            caixas = caixaRepository.findByUsuariorId(usuario.getId());
+            caixas = caixaRepository.findByUsuarioId(usuario.getId());
         }
 
         // Converte para DTO e retorna

@@ -18,20 +18,22 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
+    //Gera o token jwt
     public String generateToken(Usuario usuario) {
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = JWT.create()
+            //Cria um token jwt e retorna-o
+            return JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(usuario.getEmail())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
-            return token;
         } catch (JWTCreationException e) {
             throw new RuntimeException("Erro ao gerar token jwt" + e);
         }
     }
 
+    //Verifica se o token é valido
     public String validateToken(String token){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -45,6 +47,7 @@ public class TokenService {
         }
     }
 
+    //Gera o tempo de expiração do token
     private Instant genExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-04:00"));
     }
