@@ -28,7 +28,7 @@ public class FolhaPagamentoController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<FolhaPagamentoDTO> listarFolhaPagamentoId(@PathVariable UUID id){
-        FolhaPagamentoDTO registro = folhaPagamentoService.ListarFolhaPagamentoId(id);
+        FolhaPagamentoDTO registro = folhaPagamentoService.listarFolhaPagamentoId(id);
         return ResponseEntity.ok().body(registro);
     }
 

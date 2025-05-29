@@ -28,7 +28,7 @@ public class FormaPagamentoController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<FormaPagamentoDTO> listarFormaPagamentoId(@PathVariable UUID id){
-        FormaPagamentoDTO registro = formaPagamentoService.ListarFormaPagamentoId(id);
+        FormaPagamentoDTO registro = formaPagamentoService.listarFormaPagamentoId(id);
         return ResponseEntity.ok().body(registro);
     }
 

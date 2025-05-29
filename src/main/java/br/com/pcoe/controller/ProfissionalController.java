@@ -28,7 +28,7 @@ public class ProfissionalController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProfissionalDTO> listarProfissionalId(@PathVariable UUID id){
-        ProfissionalDTO registro = profissionalService.ListarProfissionalId(id);
+        ProfissionalDTO registro = profissionalService.listarProfissionalId(id);
         return ResponseEntity.ok().body(registro);
     }
 

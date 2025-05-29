@@ -28,7 +28,7 @@ public class UsuarioController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<ListarUsuarioDTO> listarUsuarioId(@PathVariable UUID id){
-        ListarUsuarioDTO registro = usuarioService.ListarUsuarioId(id);
+        ListarUsuarioDTO registro = usuarioService.listarUsuarioId(id);
         return ResponseEntity.ok().body(registro);
     }
 

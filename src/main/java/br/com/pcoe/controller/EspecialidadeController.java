@@ -28,7 +28,7 @@ public class EspecialidadeController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<EspecialidadeDTO> listarEspecialidadeId(@PathVariable UUID id){
-        EspecialidadeDTO registro = especialidadeService.ListarEspecialidadeId(id);
+        EspecialidadeDTO registro = especialidadeService.listarEspecialidadeId(id);
         return ResponseEntity.ok().body(registro);
     }
 
