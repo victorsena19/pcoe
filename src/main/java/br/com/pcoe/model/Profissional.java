@@ -24,5 +24,9 @@ public class Profissional implements Serializable {
             joinColumns = @JoinColumn(name = "profissional_id"),
             inverseJoinColumns = @JoinColumn(name = "especialidade_id"))
     private List<Especialidade> especialidade;
+
     private boolean ativo;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<FolhaPagamento> folhaPagamento;
 }
