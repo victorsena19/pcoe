@@ -9,6 +9,6 @@ import java.util.UUID;
 @Repository
 public interface ProfissionalRepository extends JpaRepository<Profissional, UUID> {
 
-    boolean existsByNomeIgnoreCase(String nome);
+    boolean existsById(UUID id);
 
 }

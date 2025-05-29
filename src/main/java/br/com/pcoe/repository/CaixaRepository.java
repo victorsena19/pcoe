@@ -13,8 +13,9 @@ import java.util.UUID;
 @Repository
 public interface CaixaRepository extends JpaRepository<Caixa, UUID> {
 
-    @Query(value = "SELECT c FROM Caixa c WHERE c.usuario.id = :id")
-    List<Caixa> findByUsuariorId(@Param("id") UUID id);
+    List<Caixa> findByUsuarioId(UUID id);
+
+    boolean existsByUsuarioId(UUID id);
 
     List<Caixa> findByData(LocalDate data);
 
