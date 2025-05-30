@@ -15,10 +15,14 @@ public interface CaixaRepository extends JpaRepository<Caixa, UUID> {
 
     List<Caixa> findByUsuarioId(UUID id);
 
+    Caixa findByUsuarioIdAndData(UUID id, LocalDate data);
+
     boolean existsByUsuarioId(UUID id);
 
     List<Caixa> findByData(LocalDate data);
 
     @Query("SELECT c FROM Caixa c WHERE c.data BETWEEN :data1 AND :data2")
-    List<Caixa> findByBetweenData(@Param("data1") LocalDate data1, @Param("data2") LocalDate data2);
+    List<Caixa> findByEntreData(@Param("data1") LocalDate dataInicial, @Param("data2") LocalDate dataFinal);
+
+    List<Caixa> findByUsuarioIdAndDataBetween(UUID id, LocalDate dataInicial, LocalDate dataFinal);
 }
