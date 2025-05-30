@@ -13,6 +13,7 @@ public class UsuarioDTO {
     private UUID id;
     private String nome;
     private String email;
+    private boolean ativo;
     private String password;
     private UsuarioPermissao permissao;
 
