@@ -4,7 +4,7 @@ import br.com.pcoe.dto.CaixaDTO;
 import br.com.pcoe.dto.CaixaGeralDTO;
 import br.com.pcoe.mapper.CaixaMapper;
 import br.com.pcoe.model.Caixa;
-import br.com.pcoe.utils.UtilitariosParaCaixa;
+import br.com.pcoe.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,24 +17,17 @@ import java.util.List;
 @Service
 public class CaixaGeralService {
     private final CaixaService caixaService;
-    private final CaixaMapper caixaMapper;
-    private final UtilitariosParaCaixa utilitarios;
 
     @Autowired
-    public CaixaGeralService(CaixaService caixaService, CaixaMapper caixaMapper, UtilitariosParaCaixa utilitarios){
+    public CaixaGeralService(CaixaService caixaService){
         this.caixaService = caixaService;
-        this.caixaMapper = caixaMapper;
-        this.utilitarios = utilitarios;
     }
 
 /**
  * Monta uma estrutura de CaixaGeralDTO para evitar repetição de código
- *
  */
     private CaixaGeralDTO montarCaixaGeral(List<CaixaDTO> caixas){
         if(caixas == null || caixas.isEmpty()) return new CaixaGeralDTO(Collections.emptyList(), BigDecimal.ZERO);
-        List<Caixa> caixa = caixaMapper.toEntity(caixas);
-        utilitarios.validarAcessoAdminParaCaixas(caixa);
         BigDecimal valorTotal = caixas.stream()
                 .map(CaixaDTO::getValorTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -42,12 +35,21 @@ public class CaixaGeralService {
         return new CaixaGeralDTO(caixas, valorTotal);
     }
 
+    /**
+     * somando o valor total de todos os caixas da lista
+     */
+    public CaixaGeralDTO listarTodosCaixas(){
+        List<CaixaDTO> listaDosCaixa = caixaService.listarTodosCaixas();
+        return montarCaixaGeral(listaDosCaixa);
+    }
+
 /**
- * Retorna um resumo geral de todos os caixas, somando o valor total de todos os caixas da lista
+ * Retorna um resumo geral de todos os caixas por usuario que criou o caixa,
+ * somando o valor total de todos os caixas da lista
 */
     @Transactional(readOnly = true)
-    public CaixaGeralDTO listarCaixaGerais() {
-        List<CaixaDTO> caixas = caixaService.listarCaixas();
+    public CaixaGeralDTO listarCaixaPorUsuario(Usuario usuario) {
+        List<CaixaDTO> caixas = caixaService.listarCaixasPorUsuario(usuario);
         return montarCaixaGeral(caixas);
     }
 
@@ -56,7 +58,7 @@ public class CaixaGeralService {
      */
     @Transactional(readOnly = true)
     public CaixaGeralDTO listarCaixaGeralData(LocalDate data) {
-        List<CaixaDTO> caixaPorData = caixaService.listarCaixasData(data);
+        List<CaixaDTO> caixaPorData = caixaService.listarCaixasPorData(data);
         return montarCaixaGeral(caixaPorData);
     }
 
