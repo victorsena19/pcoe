@@ -66,7 +66,9 @@ public class UsuarioService implements UserDetailsService {
         //Encriptografa a senha antes de salvar
         String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioDTO.getPassword());
         usuarioDTO.setPassword(encryptedPassword);
+
         Usuario novaUsuario = usuarioRepository.save(usuarioMapper.toEntity(usuarioDTO));
+
         return usuarioMapper.toDTO(novaUsuario);
     }
 
@@ -74,9 +76,17 @@ public class UsuarioService implements UserDetailsService {
     public UsuarioDTO atualizarUsuario(UUID id, UsuarioDTO usuarioDTO){
         Usuario usuario = utilitariosGerais
                 .buscarEntidadeId(usuarioRepository, id, "Usuário");
+
+        //Encriptografa a senha antes de salvar
+        String encryptedPassword = new BCryptPasswordEncoder().encode(usuarioDTO.getPassword());
+        usuarioDTO.setPassword(encryptedPassword);
+
         Usuario usuarioAtualizada = usuarioMapper.toEntity(usuarioDTO);
+
         usuarioAtualizada.setId(usuario.getId());
+
         Usuario salvarUsuario = usuarioRepository.save(usuarioAtualizada);
+
         return usuarioMapper.toDTO(salvarUsuario);
     }
 
