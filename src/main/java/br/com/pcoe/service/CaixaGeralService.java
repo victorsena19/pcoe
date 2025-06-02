@@ -2,8 +2,6 @@ package br.com.pcoe.service;
 
 import br.com.pcoe.dto.CaixaDTO;
 import br.com.pcoe.dto.CaixaGeralDTO;
-import br.com.pcoe.mapper.CaixaMapper;
-import br.com.pcoe.model.Caixa;
 import br.com.pcoe.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
