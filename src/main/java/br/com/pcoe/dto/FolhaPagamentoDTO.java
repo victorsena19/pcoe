@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -12,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class FolhaPagamentoDTO {
         private UUID id;
+        private LocalDate data;
         private ProfissionalDTO profissional;
         private BigDecimal valorBase;
         private BigDecimal valorAcrescimo;
