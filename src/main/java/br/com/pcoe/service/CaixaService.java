@@ -2,14 +2,17 @@ package br.com.pcoe.service;
 
 import br.com.pcoe.dto.CaixaDTO;
 import br.com.pcoe.enuns.MensagensErrosGenericas;
+import br.com.pcoe.exceptions.MensagemException;
 import br.com.pcoe.mapper.CaixaMapper;
 import br.com.pcoe.model.*;
 import br.com.pcoe.repository.CaixaRepository;
 import br.com.pcoe.repository.EspecialidadeRepository;
 import br.com.pcoe.repository.FormaPagamentoRepository;
+import br.com.pcoe.utils.UtilitariosGerais;
 import br.com.pcoe.utils.UtilitariosParaCaixa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,57 +28,88 @@ public class CaixaService {
     private final FormaPagamentoRepository formaPagamentoRepository;
     private final EspecialidadeRepository especialidadeRepository;
     private final UtilitariosParaCaixa utilitarios;
+    private final UtilitariosGerais utilitariosGerais;
 
     @Autowired
     public CaixaService(CaixaRepository caixaRepository, CaixaMapper caixaMapper,
                         FormaPagamentoRepository formaPagamentoRepository,
                         EspecialidadeRepository especialidadeRepository,
-                        UtilitariosParaCaixa utilitarios){
+                        UtilitariosParaCaixa utilitarios, UtilitariosGerais utilitariosGerais){
         this.caixaRepository = caixaRepository;
         this.caixaMapper = caixaMapper;
         this.formaPagamentoRepository = formaPagamentoRepository;
         this.especialidadeRepository = especialidadeRepository;
         this.utilitarios = utilitarios;
+        this.utilitariosGerais = utilitariosGerais;
     }
 
-   ;
+    public List<CaixaDTO> listarTodosCaixas(){
+        return caixaMapper.toDTO(caixaRepository.findAll());
+    }
 
     //Lista caixas por uma data específica
-    public List<CaixaDTO> listarCaixasData(LocalDate data){
+    @Transactional(readOnly = true)
+    public List<CaixaDTO> listarCaixasPorData(LocalDate data){
         return caixaMapper.toDTO(caixaRepository.findByData(data));
     }
 
-    //Lista caixas entre duas datas específicas
-    public List<CaixaDTO> listarCaixaEntreDatas(LocalDate data1, LocalDate data2) {
-        return caixaMapper.toDTO(caixaRepository.findByBetweenData(data1, data2));
+
+    @Transactional(readOnly = true)
+    public List<CaixaDTO> listarCaixaEntreDatas(LocalDate dataInicial, LocalDate dataFinal) {
+        return caixaMapper.toDTO(caixaRepository.findByEntreData(dataInicial, dataFinal));
     }
 
-    //Lista todos os caixas criados, sendo que só pode ser visto pelo usuario que criou os caixas ou Admin que pode ver todos
-    public List<CaixaDTO> listarCaixas() {
+
+    @Transactional(readOnly = true)
+    public List<CaixaDTO> listarCaixaPorPeriodoUsuarioLogado(LocalDate dataInicial, LocalDate dataFinal) {
         Usuario usuario = utilitarios.getUsuarioLogado();
+        return caixaMapper.toDTO(caixaRepository.
+                findByUsuarioIdAndDataBetween(usuario.getId(), dataInicial, dataFinal));
+    }
 
-        //Lista os caixas com base nas permisssoes
-        List<Caixa> caixas;
-        if (utilitarios.isAdmin(usuario)) {
-            caixas = caixaRepository.findAll();
-        } else {
-            caixas = caixaRepository.findByUsuarioId(usuario.getId());
-        }
+    @Transactional(readOnly = true)
+    public CaixaDTO listarCaixaPorDataParaUsarioLogado(LocalDate data){
+        Usuario usuario = utilitarios.getUsuarioLogado();
+        Caixa caixas = caixaRepository.findByUsuarioIdAndData(usuario.getId(), data);
 
-        // Converte para DTO e retorna
         return caixaMapper.toDTO(caixas);
     }
 
+    //Lista todos os caixas criados, sendo que só pode ser visto pelo usuario que criou os caixas
+    @Transactional(readOnly = true)
+    public List<CaixaDTO> listarCaixasParaUsuarioLogado() {
+        Usuario usuario = utilitarios.getUsuarioLogado();
+        List<Caixa> caixas = caixaRepository.findByUsuarioId(usuario.getId());
+        return caixaMapper.toDTO(caixas);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CaixaDTO> listarCaixasPorUsuario(Usuario usuario) {
+        List<Caixa> caixas = caixaRepository.findByUsuarioId(usuario.getId());
+        return caixaMapper.toDTO(caixas);
+    }
+
+
+
     //Lista caixa por ID com base em quem criou ou se for Admin mostra qualquer caixa com base no ID
+    @Transactional(readOnly = true)
     public CaixaDTO listarCaixaId(UUID id){
         //Verifica se existe um caixa com esse ID, se não existir lança exceção
-        Caixa caixa = caixaRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException(MensagensErrosGenericas.IDNAOENCONTRADO.getErro() + id));
+        Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
 
-        //Verificar se é o mesmo usuario que criou o caixa ou é Admin, se não for lança exceção
-        utilitarios.validarPermissaoOuLancar(caixa,
+        //Verificar se é o mesmo usuário que criou o caixa ou é Admin, se não for lança exceção
+        utilitarios.validarPermissaoOuLancarErro(caixaExistente,
                 MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("visualizar"));
-        return caixaMapper.toDTO(caixa);
+        return caixaMapper.toDTO(caixaExistente);
+    }
+
+
+     //Listar Caixa aberto baseado no usuário logado
+    @Transactional(readOnly = true)
+    public List<CaixaDTO> listarCaixaAbertoParaUsuarioLogado(){
+        List<CaixaDTO> listaDosCaixa = listarCaixasParaUsuarioLogado();
+       return listaDosCaixa.stream()
+               .filter(CaixaDTO::isAberto).collect(Collectors.toList());
     }
 
     //Abre um caixa com base na data atual e valores iniciais zerados
@@ -112,15 +146,14 @@ public class CaixaService {
 
     //Movimentação de um caixa depois de aberto
     public CaixaDTO movimentoCaixa(UUID id, CaixaDTO caixaDTO){
-        //Acha o caixa com base no ID
-        Caixa caixaExistente = caixaRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException(MensagensErrosGenericas.IDNAOENCONTRADO.format("caixa") + id));
+        //Acha o caixa com base no ID, caso não ache lança uma exceção
+        Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
 
         //Usuario que Criou o caixa
         Usuario usuario = caixaExistente.getUsuario();
 
         //Se não for o usuario que criou o caixa e não é Admin lança exceção
-        utilitarios.validarPermissaoOuLancar(caixaExistente,
+        utilitarios.validarPermissaoOuLancarErro(caixaExistente,
                 MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("movimentar"));
 
         //Percorre a Lista de Movimento com o intuito de saber as formas de pagamentos e os valores
@@ -167,69 +200,66 @@ public class CaixaService {
     //Reabre o caixa se estiver fechado passando o ID do caixa
     public CaixaDTO reabrirCaixa(UUID id) {
         //Verifica se existe um caixa com esse ID
-        Caixa caixa = caixaRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException(MensagensErrosGenericas.IDNAOENCONTRADO.format("caixa") + id));
-        if (caixa.isAberto()){
-            throw new IllegalArgumentException("Não pode reabrir um caixa que já está aberto!");
+        Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
+        if (caixaExistente.isAberto()){
+            throw new MensagemException("Não pode reabrir um caixa que já está aberto!");
         }
         //Pega Usuario logado
         Usuario usuario = utilitarios.getUsuarioLogado();
 
         //Verificar se é mesmo usuario que criou o caixa
-        boolean isMesmoUsuario = usuario.getId().equals(caixa.getUsuario().getId());
+        boolean isMesmoUsuario = usuario.getId().equals(caixaExistente.getUsuario().getId());
 
         //Verificar se é mesmo dia
-        boolean isMesmoDia = caixa.getData().equals(LocalDate.now());
+        boolean isMesmoDia = caixaExistente.getData().equals(LocalDate.now());
 
         //Verifica se usuario é Admin ou é mesmo usuario e mesmo dia
         if (!(utilitarios.isAdmin(usuario) || (isMesmoUsuario && isMesmoDia))){
             throw new RuntimeException(MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("reabrir"));
         }
 
-        caixa.setAberto(true);
+        caixaExistente.setAberto(true);
 
-        Caixa caixaSalvo = caixaRepository.save(caixa);
+        Caixa caixaSalvo = caixaRepository.save(caixaExistente);
 
         return caixaMapper.toDTO(caixaSalvo);
     }
 
     public CaixaDTO fecharCaixa(UUID id){
         //Verifica se existe um caixa com esse ID, se não existir lança exceção
-        Caixa caixa = caixaRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException(MensagensErrosGenericas.IDNAOENCONTRADO.format("caixa") + id));
+        Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
 
-        utilitarios.validarPermissaoOuLancar(caixa, MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("fechar"));
+        utilitarios.validarPermissaoOuLancarErro(caixaExistente, MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("fechar"));
 
 
-        List<CaixaMovimento> caixaMovimento = caixa.getCaixaMovimento();
-        List<CaixaMovimentoEspecialidade> caixaMovimentoEspecialidade = caixa.getCaixaMovimentoEspecialidade();
+        List<CaixaMovimento> caixaMovimento = caixaExistente.getCaixaMovimento();
+        List<CaixaMovimentoEspecialidade> caixaMovimentoEspecialidade = caixaExistente.getCaixaMovimentoEspecialidade();
 
         if ((caixaMovimento == null || caixaMovimento.isEmpty()) &&
                 (caixaMovimentoEspecialidade == null || caixaMovimentoEspecialidade.isEmpty())){
             throw new IllegalArgumentException("Não é possivel fechar um caixa sem movimentação, tente exclui-lo");
         }
 
-        caixa.setAberto(false);
+        caixaExistente.setAberto(false);
 
-        Caixa caixaSalvo = caixaRepository.save(caixa);
+        Caixa caixaSalvo = caixaRepository.save(caixaExistente);
 
         return caixaMapper.toDTO(caixaSalvo);
     }
 
     public void deletarCaixa(UUID id){
         //Verifica se existe um caixa com esse ID
-        Caixa caixa = caixaRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException(MensagensErrosGenericas.IDNAOENCONTRADO.format("caixa") + id));
+        Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
         //Verificar se é o mesmo usuario que criou o caixa ou é Admin
-        utilitarios.validarPermissaoOuLancar(caixa, MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("apagar"));
+        utilitarios.validarPermissaoOuLancarErro(caixaExistente, MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("apagar"));
 
-        List<CaixaMovimento> caixaMovimento = caixa.getCaixaMovimento();
-        List<CaixaMovimentoEspecialidade> caixaMovimentoEspecialidade = caixa.getCaixaMovimentoEspecialidade();
+        List<CaixaMovimento> caixaMovimento = caixaExistente.getCaixaMovimento();
+        List<CaixaMovimentoEspecialidade> caixaMovimentoEspecialidade = caixaExistente.getCaixaMovimentoEspecialidade();
 
         if((caixaMovimento != null && !caixaMovimento.isEmpty()) ||
                 (caixaMovimentoEspecialidade != null && !caixaMovimentoEspecialidade.isEmpty())){
             throw new IllegalArgumentException("Não é possivel excluir um caixa que já teve uma movimentação");
         }
-        caixaRepository.delete(caixa);
+        caixaRepository.delete(caixaExistente);
     }
 }

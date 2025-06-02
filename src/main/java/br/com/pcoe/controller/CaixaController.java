@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +22,27 @@ public class CaixaController {
     }
 
     @GetMapping
-    public List<CaixaDTO> listarCaixas(){
-        return caixaService.listarCaixas();
+    public ResponseEntity<List<CaixaDTO>> listarCaixasParaUsuarioLogado(){
+        List<CaixaDTO> registro = caixaService.listarCaixasParaUsuarioLogado();
+        return ResponseEntity.ok().body(registro);
+    }
+
+    @GetMapping(path = "/data")
+    public ResponseEntity<CaixaDTO> listarCaixasPorDataUsuarioLogado(@RequestParam LocalDate data){
+        CaixaDTO registro = caixaService.listarCaixaPorDataParaUsarioLogado(data);
+        return ResponseEntity.ok().body(registro);
+    }
+
+    @GetMapping(path = "/datas")
+    public ResponseEntity<List<CaixaDTO>> listarCaixasPorPeriodoUsuarioLogado(@RequestParam LocalDate dataInicial,@RequestParam LocalDate dataFinal){
+        List<CaixaDTO> registro = caixaService.listarCaixaPorPeriodoUsuarioLogado(dataInicial, dataFinal);
+        return ResponseEntity.ok().body(registro);
+    }
+
+    @GetMapping(path = "/aberto")
+    public ResponseEntity<List<CaixaDTO>> listarCaixasAbertoParaUsuarioLogado(){
+        List<CaixaDTO> registro = caixaService.listarCaixaAbertoParaUsuarioLogado();
+        return ResponseEntity.ok().body(registro);
     }
 
     @GetMapping(path = "/{id}")
@@ -47,6 +67,12 @@ public class CaixaController {
     public ResponseEntity<CaixaDTO> fecharCaixa(@PathVariable UUID id){
         CaixaDTO caixaFechado = caixaService.fecharCaixa(id);
         return  ResponseEntity.ok().body(caixaFechado);
+    }
+
+    @PostMapping(path = "reabrir/{id}")
+    public ResponseEntity<CaixaDTO> reabrirCaixa(@PathVariable UUID id) {
+        CaixaDTO caixaReaberto = caixaService.reabrirCaixa(id);
+        return ResponseEntity.status(200).build();
     }
 
     @DeleteMapping(path = "/{id}")
