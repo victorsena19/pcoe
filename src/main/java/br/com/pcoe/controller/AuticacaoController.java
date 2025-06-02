@@ -19,7 +19,8 @@ public class AuticacaoController {
     private final TokenService tokenService;
 
     @Autowired
-    public AuticacaoController(AuthenticationManager authenticationManager, TokenService tokenService){
+    public AuticacaoController(AuthenticationManager authenticationManager,
+                               TokenService tokenService){
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
     }
@@ -28,7 +29,7 @@ public class AuticacaoController {
     public ResponseEntity<?> login(@RequestBody AutenticacaoDTO data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
         var auth = authenticationManager.authenticate(usernamePassword);
-        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+        var token = tokenService.gerarTokenJwt((Usuario) auth.getPrincipal());
         var permissao = auth.getAuthorities().stream().toList().get(0).getAuthority();
         return ResponseEntity.ok(new LoginRespostaDTO(token, permissao));
     }
