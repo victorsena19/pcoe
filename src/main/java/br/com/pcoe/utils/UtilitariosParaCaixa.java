@@ -7,8 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 
 /**
  * Classe utilitária para acesso ao usuário logado e permissões para Caixa.
@@ -34,23 +32,24 @@ public final class UtilitariosParaCaixa {
         return !usuarioLogado.getId().equals(caixa.getUsuario().getId()) && !isAdmin(usuarioLogado);
     }
 
-    public void validarPermissaoOuLancar(Caixa caixa, String mensagemErro){
+    public void validarPermissaoOuLancarErro(Caixa caixa, String mensagemErro){
         if(naoEhCriadorNemAdmin(caixa)) {
             throw new MensagemException(mensagemErro);
         }
     }
+
+    /*
     public void validarSomenteAdmin(Caixa caixa, Usuario usuario){
         if (!isAdmin(usuario)){
-            validarPermissaoOuLancar(caixa, "Somente Admin pode acessar esse recurso.");
+            validarPermissaoOuLancarErro(caixa, "Somente Admin pode acessar esse recurso.");
         }
     }
 
     public void validarAcessoAdminParaCaixas(List<Caixa> caixas){
         if(caixas == null || caixas.isEmpty())return;
-
         caixas.forEach(cx -> validarSomenteAdmin(cx, cx.getUsuario()));
     }
-
+    */
 }
 
 
