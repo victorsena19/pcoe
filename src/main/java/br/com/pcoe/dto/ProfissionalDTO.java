@@ -13,6 +13,7 @@ import java.util.UUID;
 public class ProfissionalDTO {
         private UUID id;
         private String nome;
+        private String cpf;
         private List<EspecialidadeDTO> especialidade;
         private boolean ativo;
 }

@@ -19,6 +19,7 @@ public class Profissional implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String nome;
+    private String cpf;
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "profissionais_especialidades",
             joinColumns = @JoinColumn(name = "profissional_id"),
