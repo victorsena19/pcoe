@@ -13,7 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class FolhaPagamentoDTO {
         private UUID id;
-        private LocalDate data;
+        private LocalDate dataLancamentoFolhaPagamento;
+        private LocalDate dataInicialPrestacaoSevico;
+        private LocalDate dataFinalPrestacaoSevico;
         private ProfissionalDTO profissional;
         private BigDecimal valorBase;
         private BigDecimal valorAcrescimo;
