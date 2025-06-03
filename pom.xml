@@ -148,6 +148,12 @@
 			<type>pom</type>
 		</dependency>
 
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>74.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
