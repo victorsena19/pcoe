@@ -22,8 +22,10 @@ public class FolhaPagamento implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    private LocalDate dataLancamentoFolhaPagamento;
+    private LocalDate dataInicialPrestacaoSevico;
+    private LocalDate dataFinalPrestacaoSevico;
 
-    private LocalDate data;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JsonManagedReference
     private Profissional profissional;
