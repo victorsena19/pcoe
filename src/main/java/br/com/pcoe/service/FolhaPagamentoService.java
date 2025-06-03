@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,11 +49,8 @@ public class FolhaPagamentoService {
         if (!profissional) {
             throw new MensagemException(MensagensErrosGenericas.IDNAOENCONTRADO.format("Profissional"));
         }
-        boolean folhaPagamentoExistente = folhaPagamentoRepository.existsByProfissionalId(folhaPagamentoDTO.getId());
-        if (folhaPagamentoExistente) {
-            throw new MensagemException(MensagensErrosGenericas
-                    .ARGUMENTOJAEXISTENTE.format("Folha de Pagamento para esse Profissional"));
-        }
+
+        folhaPagamentoDTO.setDataLancamentoFolhaPagamento(LocalDate.now());
         FolhaPagamento novaFolhaPagamento = folhaPagamentoRepository.save(folhaPagamentoMapper.toEntity(folhaPagamentoDTO));
         return folhaPagamentoMapper.toDTO(novaFolhaPagamento);
     }
