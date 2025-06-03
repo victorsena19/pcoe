@@ -46,20 +46,22 @@ public class FolhaPagamentoPDF {
             String nomeEmpresa = "Odonto Excellence Espinheiros";
             String cnpjEmpresa = "00.000.000/0001-00";
             BigDecimal valor = folha.getValorLiquido();
-            LocalDate dataPagamento = folha.getDataFinalPrestacaoSevico();
+            LocalDate dataReferentePagamento = folha.getDataFinalPrestacaoSevico();
+            LocalDate dataLancamentoPagamento = folha.getDataLancamentoFolhaPagamento();
             Locale locale = new Locale("pt", "BR");
-            String mes = dataPagamento.getMonth().getDisplayName(TextStyle.FULL, locale);
+            String mes = dataReferentePagamento.getMonth().getDisplayName(TextStyle.FULL, locale);
+            String mesLancamentoPagamento = dataLancamentoPagamento.getMonth().getDisplayName(TextStyle.FULL, locale);
             String valorExtenso = new MoedaUtil().valorPorExtenso(valor);
 
             String texto = String.format(
                     "DECLARAÇÃO DE PAGAMENTO AO SERVIÇOS PRESTADOS\n\n" +
-                            "Eu %s inscrito (a) no CPF nº %s declaro que recebi da empresa %s de CNPJ %s a quantia de R$ %.2f (%s) " +
-                            "referente aos serviços odontológicos prestados para a unidade %s no mês de %s.\n\n" +
-                            "Itajaí, %d de %s de %d\n\n" +
-                            "____________________________________\n%s\nCirurgião (a) Dentista\nPrestador (a) de Serviço Odontológico",
+                    "Eu %s inscrito (a) no CPF nº %s declaro que recebi da empresa %s de CNPJ %s a quantia de R$ %.2f (%s) " +
+                    "referente aos serviços odontológicos prestados para a unidade %s no mês de %s.\n\n" +
+                    "Itajaí, %d de %s de %d\n\n" +
+                    "____________________________________\n%s\nCirurgião (a) Dentista\nPrestador (a) de Serviço Odontológico",
                     nomeProfissional, cpfProfissional, nomeEmpresa, cnpjEmpresa,
                     valor, valorExtenso, nomeEmpresa, mes,
-                    dataPagamento.getDayOfMonth(), mes, dataPagamento.getYear(),
+                    dataLancamentoPagamento.getDayOfMonth(), mesLancamentoPagamento, dataLancamentoPagamento.getYear(),
                     nomeProfissional
             );
 
