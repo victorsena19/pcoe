@@ -6,6 +6,7 @@ import br.com.pcoe.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,28 +22,34 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<ListarUsuarioDTO> listarUsuarios(){
-        return usuarioService.listarUsuarios();
+    public ResponseEntity<List<ListarUsuarioDTO>> listarUsuarios(){
+        return ResponseEntity.ok().body(usuarioService.listarUsuarios());
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<ListarUsuarioDTO> listarUsuarioId(@PathVariable UUID id){
         ListarUsuarioDTO registro = usuarioService.listarUsuarioId(id);
         return ResponseEntity.ok().body(registro);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UsuarioDTO> cadastrarUsuario(@RequestBody UsuarioDTO usuario){
         UsuarioDTO novoUsuario = usuarioService.cadastroUsuario(usuario);
         return  ResponseEntity.status(HttpStatusCode.valueOf(201)).body(novoUsuario);
     }
+
+    //@PreAuthorize("hasRole('ADMIN')")
     @PutMapping(path = "/{id}")
     public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable UUID id, @RequestBody UsuarioDTO usuario){
         UsuarioDTO usuarioAtualizado = usuarioService.atualizarUsuario(id,usuario);
         return  ResponseEntity.ok().body(usuarioAtualizado);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<UsuarioDTO> deletarUsuario(@PathVariable UUID id){
         usuarioService.deletarUsuario(id);

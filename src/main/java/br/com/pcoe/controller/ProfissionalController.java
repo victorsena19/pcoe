@@ -5,6 +5,7 @@ import br.com.pcoe.service.ProfissionalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class ProfissionalController {
         this.profissionalService = profissionalService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<ProfissionalDTO> listarProfissionais(){
         return profissionalService.listarProfissionais();
@@ -32,18 +34,21 @@ public class ProfissionalController {
         return ResponseEntity.ok().body(registro);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProfissionalDTO> cadastrarProfissional(@RequestBody ProfissionalDTO profissional){
         ProfissionalDTO novoProfissional = profissionalService.cadastroProfissional(profissional);
         return  ResponseEntity.status(HttpStatusCode.valueOf(201)).body(novoProfissional);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(path = "/{id}")
     public ResponseEntity<ProfissionalDTO> atualizarProfissional(@PathVariable UUID id, @RequestBody ProfissionalDTO profissional){
         ProfissionalDTO profissionalAtualizado = profissionalService.atualizarProfissional(id,profissional);
         return  ResponseEntity.ok().body(profissionalAtualizado);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<ProfissionalDTO> deletarProfissional(@PathVariable UUID id){
         profissionalService.deletarProfissional(id);
