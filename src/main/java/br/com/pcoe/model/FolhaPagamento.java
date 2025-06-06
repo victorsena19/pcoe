@@ -17,7 +17,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "salarios")
+@Table(name = "folhas_pagamentos")
 public class FolhaPagamento implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
