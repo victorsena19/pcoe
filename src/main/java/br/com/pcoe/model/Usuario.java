@@ -1,8 +1,6 @@
 package br.com.pcoe.model;
 
-import br.com.pcoe.enuns.UsuarioPermissao;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import br.com.pcoe.enums.UsuarioPermissao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

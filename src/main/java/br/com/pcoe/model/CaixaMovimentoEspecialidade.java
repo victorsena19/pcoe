@@ -22,7 +22,6 @@ public class CaixaMovimentoEspecialidade {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "especialidade_id")
-    @JsonManagedReference
     private Especialidade especialidade;
 
     @ManyToOne(cascade = CascadeType.MERGE)

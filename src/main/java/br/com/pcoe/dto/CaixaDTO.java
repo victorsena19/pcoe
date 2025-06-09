@@ -19,7 +19,7 @@ public class CaixaDTO {
         private LocalDate data;
         private boolean aberto;
         private BigDecimal valorTotal;
-        private BigDecimal ValorRetirada;
+        private BigDecimal valorRetirada;
         private BigDecimal valorQuebra;
         private String observacao;
 

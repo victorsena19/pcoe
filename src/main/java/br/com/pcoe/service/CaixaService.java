@@ -1,7 +1,7 @@
 package br.com.pcoe.service;
 
 import br.com.pcoe.dto.CaixaDTO;
-import br.com.pcoe.enuns.MensagensErrosGenericas;
+import br.com.pcoe.enums.MensagensErrosGenericas;
 import br.com.pcoe.exceptions.MensagemException;
 import br.com.pcoe.mapper.CaixaMapper;
 import br.com.pcoe.model.*;
@@ -112,7 +112,7 @@ public class CaixaService {
                .filter(CaixaDTO::isAberto).collect(Collectors.toList());
     }
 
-    //Abre um caixa com base na data atual e valores iniciais zerados
+    @Transactional
     public CaixaDTO abrirCaixa() {
         Usuario usuario = utilitarios.getUsuarioLogado();
 
@@ -144,7 +144,7 @@ public class CaixaService {
         return caixaMapper.toDTO(novaCaixa);
     }
 
-    //Movimentação de um caixa depois de aberto
+    @Transactional
     public CaixaDTO movimentoCaixa(UUID id, CaixaDTO caixaDTO){
         //Acha o caixa com base no ID, caso não ache lança uma exceção
         Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
@@ -197,7 +197,7 @@ public class CaixaService {
         return caixaMapper.toDTO(caixaAtualizado);
     }
 
-    //Reabre o caixa se estiver fechado passando o ID do caixa
+    @Transactional
     public CaixaDTO reabrirCaixa(UUID id) {
         //Verifica se existe um caixa com esse ID
         Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
@@ -225,6 +225,7 @@ public class CaixaService {
         return caixaMapper.toDTO(caixaSalvo);
     }
 
+    @Transactional
     public CaixaDTO fecharCaixa(UUID id){
         //Verifica se existe um caixa com esse ID, se não existir lança exceção
         Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
@@ -247,6 +248,7 @@ public class CaixaService {
         return caixaMapper.toDTO(caixaSalvo);
     }
 
+    @Transactional
     public void deletarCaixa(UUID id){
         //Verifica se existe um caixa com esse ID
         Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");

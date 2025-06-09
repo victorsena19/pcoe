@@ -1,6 +1,6 @@
 package br.com.pcoe.dto;
 
-import br.com.pcoe.enuns.UsuarioPermissao;
+import br.com.pcoe.enums.UsuarioPermissao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

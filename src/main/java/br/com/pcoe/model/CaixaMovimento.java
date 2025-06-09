@@ -23,7 +23,6 @@ public class CaixaMovimento implements Serializable {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "forma_pagamento")
-    @JsonManagedReference
     private FormaPagamento formaPagamento;
 
     @ManyToOne(cascade = CascadeType.MERGE)

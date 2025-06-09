@@ -1,4 +1,4 @@
-package br.com.pcoe.enuns;
+package br.com.pcoe.enums;
 
 import lombok.Getter;
 

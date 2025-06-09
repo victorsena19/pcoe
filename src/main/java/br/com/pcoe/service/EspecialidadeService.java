@@ -1,7 +1,7 @@
 package br.com.pcoe.service;
 
 import br.com.pcoe.dto.EspecialidadeDTO;
-import br.com.pcoe.enuns.MensagensErrosGenericas;
+import br.com.pcoe.enums.MensagensErrosGenericas;
 import br.com.pcoe.exceptions.MensagemException;
 import br.com.pcoe.model.Especialidade;
 import br.com.pcoe.mapper.EspecialidadeMapper;

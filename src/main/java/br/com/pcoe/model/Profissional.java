@@ -1,5 +1,7 @@
 package br.com.pcoe.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +22,8 @@ public class Profissional implements Serializable {
     private UUID id;
     private String nome;
     private String cpf;
+
+    @JsonBackReference
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "profissionais_especialidades",
             joinColumns = @JoinColumn(name = "profissional_id"),
@@ -29,5 +33,6 @@ public class Profissional implements Serializable {
     private boolean ativo;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<FolhaPagamento> folhaPagamento;
 }

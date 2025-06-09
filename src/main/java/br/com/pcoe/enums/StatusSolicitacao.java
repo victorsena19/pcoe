@@ -1,4 +1,4 @@
-package br.com.pcoe.enuns;
+package br.com.pcoe.enums;
 
 public enum StatusSolicitacao {
     PENDENTE,

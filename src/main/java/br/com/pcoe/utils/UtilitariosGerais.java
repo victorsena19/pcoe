@@ -1,6 +1,6 @@
 package br.com.pcoe.utils;
 
-import br.com.pcoe.enuns.MensagensErrosGenericas;
+import br.com.pcoe.enums.MensagensErrosGenericas;
 import br.com.pcoe.exceptions.MensagemException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;

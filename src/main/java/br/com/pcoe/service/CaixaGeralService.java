@@ -36,6 +36,7 @@ public class CaixaGeralService {
     /**
      * somando o valor total de todos os caixas da lista
      */
+    @Transactional(readOnly = true)
     public CaixaGeralDTO listarTodosCaixas(){
         List<CaixaDTO> listaDosCaixa = caixaService.listarTodosCaixas();
         return montarCaixaGeral(listaDosCaixa);
