@@ -69,12 +69,6 @@ public class CaixaController {
         return  ResponseEntity.ok().body(caixaFechado);
     }
 
-    @PostMapping(path = "reabrir/{id}")
-    public ResponseEntity<CaixaDTO> reabrirCaixa(@PathVariable UUID id) {
-        CaixaDTO caixaReaberto = caixaService.reabrirCaixa(id);
-        return ResponseEntity.status(200).build();
-    }
-
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<CaixaDTO> deletarCaixa(@PathVariable UUID id){
         caixaService.deletarCaixa(id);
