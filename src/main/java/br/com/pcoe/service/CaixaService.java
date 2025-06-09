@@ -1,6 +1,8 @@
 package br.com.pcoe.service;
 
 import br.com.pcoe.dto.CaixaDTO;
+import br.com.pcoe.dto.CaixaMovimentoDTO;
+import br.com.pcoe.dto.CaixaMovimentoEspecialidadeDTO;
 import br.com.pcoe.enums.MensagensErrosGenericas;
 import br.com.pcoe.exceptions.MensagemException;
 import br.com.pcoe.mapper.CaixaMapper;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -144,6 +147,29 @@ public class CaixaService {
         return caixaMapper.toDTO(novaCaixa);
     }
 
+    //Calcula o valor total do caixa
+    private void calcularValorTotalCaixa(CaixaDTO caixaDTO){
+        caixaDTO.getCaixaMovimentoEspecialidade().forEach(valor ->
+                caixaDTO.setValorTotal(caixaDTO.getValorTotal().add(valor.getValorMovimento())));
+    }
+
+    private void validaValorTotalCaixa(CaixaDTO caixaDTO){
+        List<BigDecimal> valoresEspecialidade = caixaDTO.getCaixaMovimentoEspecialidade().stream()
+                .map(CaixaMovimentoEspecialidadeDTO::getValorMovimento)
+                .toList();
+
+        List<BigDecimal> valoresFormaPagamento = caixaDTO.getCaixaMovimento().stream()
+                .map(CaixaMovimentoDTO::getValorMovimento)
+                .toList();
+
+        // Exemplo 1: Verifica se as duas listas contêm exatamente os mesmos valores, ignorando a ordem
+        boolean iguais = new HashSet<>(valoresEspecialidade).equals(new HashSet<>(valoresFormaPagamento));
+
+        if (!iguais) {
+            throw new MensagemException("Valores de movimentos das especialidades e formas de pagamento não coincidem.");
+        }
+    }
+
     @Transactional
     public CaixaDTO movimentoCaixa(UUID id, CaixaDTO caixaDTO){
         //Acha o caixa com base no ID, caso não ache lança uma exceção
@@ -186,11 +212,17 @@ public class CaixaService {
         //Seta os valores da Movimentação Especialidade no caixa
         caixaExistente.setCaixaMovimentoEspecialidade(listaMovimentoEspecialidade);
 
+        //Calcula o valor total do caixa
+        calcularValorTotalCaixa(caixaDTO);
+
         //Seta os dados no caixa
         caixaExistente.setValorTotal(caixaDTO.getValorTotal());
         caixaExistente.setValorRetirada(caixaDTO.getValorRetirada());
         caixaExistente.setValorQuebra(caixaDTO.getValorQuebra());
         caixaExistente.setObservacao(caixaDTO.getObservacao());
+
+        //Verificar se os valores de valorMovimento são iguais nas duas listas
+        validaValorTotalCaixa(caixaDTO);
 
         Caixa caixaAtualizado = caixaRepository.save(caixaExistente);
 
@@ -198,7 +230,7 @@ public class CaixaService {
     }
 
     @Transactional
-    public CaixaDTO reabrirCaixa(UUID id) {
+    public void reabrirCaixa(UUID id) {
         //Verifica se existe um caixa com esse ID
         Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository, id, "Caixa");
         if (caixaExistente.isAberto()){
@@ -222,7 +254,7 @@ public class CaixaService {
 
         Caixa caixaSalvo = caixaRepository.save(caixaExistente);
 
-        return caixaMapper.toDTO(caixaSalvo);
+        caixaMapper.toDTO(caixaSalvo);
     }
 
     @Transactional
