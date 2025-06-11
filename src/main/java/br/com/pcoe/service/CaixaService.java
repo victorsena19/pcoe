@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -92,8 +91,6 @@ public class CaixaService {
         return caixaMapper.toDTO(caixas);
     }
 
-
-
     //Lista caixa por ID com base em quem criou ou se for Admin mostra qualquer caixa com base no ID
     @Transactional(readOnly = true)
     public CaixaDTO listarCaixaId(UUID id){
@@ -154,18 +151,14 @@ public class CaixaService {
     }
 
     private void validaValorTotalCaixa(CaixaDTO caixaDTO){
-        List<BigDecimal> valoresEspecialidade = caixaDTO.getCaixaMovimentoEspecialidade().stream()
-                .map(CaixaMovimentoEspecialidadeDTO::getValorMovimento)
-                .toList();
 
-        List<BigDecimal> valoresFormaPagamento = caixaDTO.getCaixaMovimento().stream()
-                .map(CaixaMovimentoDTO::getValorMovimento)
-                .toList();
+        BigDecimal valoresEspecialidade = caixaDTO.getCaixaMovimentoEspecialidade().stream()
+                .map(CaixaMovimentoEspecialidadeDTO::getValorMovimento).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Exemplo 1: Verifica se as duas listas contêm exatamente os mesmos valores, ignorando a ordem
-        boolean iguais = new HashSet<>(valoresEspecialidade).equals(new HashSet<>(valoresFormaPagamento));
+        BigDecimal valoresFormaPagamento = caixaDTO.getCaixaMovimento().stream()
+                .map(CaixaMovimentoDTO::getValorMovimento).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (!iguais) {
+        if (valoresEspecialidade.compareTo(valoresFormaPagamento) != 0) {
             throw new MensagemException("Valores de movimentos das especialidades e formas de pagamento não coincidem.");
         }
     }
@@ -212,17 +205,16 @@ public class CaixaService {
         //Seta os valores da Movimentação Especialidade no caixa
         caixaExistente.setCaixaMovimentoEspecialidade(listaMovimentoEspecialidade);
 
+        //Verificar se os valores de valorMovimento são iguais nas duas listas
+        validaValorTotalCaixa(caixaDTO);
+
         //Calcula o valor total do caixa
         calcularValorTotalCaixa(caixaDTO);
 
-        //Seta os dados no caixa
         caixaExistente.setValorTotal(caixaDTO.getValorTotal());
         caixaExistente.setValorRetirada(caixaDTO.getValorRetirada());
         caixaExistente.setValorQuebra(caixaDTO.getValorQuebra());
         caixaExistente.setObservacao(caixaDTO.getObservacao());
-
-        //Verificar se os valores de valorMovimento são iguais nas duas listas
-        validaValorTotalCaixa(caixaDTO);
 
         Caixa caixaAtualizado = caixaRepository.save(caixaExistente);
 
