@@ -3,6 +3,7 @@ package br.com.pcoe.service;
 import br.com.pcoe.dto.RequisicaoSolicitacaoReaberturaDTO;
 import br.com.pcoe.dto.RespostaSolicitacaoReaberturaDTO;
 import br.com.pcoe.enums.StatusSolicitacao;
+import br.com.pcoe.exceptions.MensagemException;
 import br.com.pcoe.mapper.SolicitacaoReaberturaCaixaMapper;
 import br.com.pcoe.model.Caixa;
 import br.com.pcoe.model.SolicitacaoReaberturaCaixa;
@@ -68,14 +69,24 @@ public class SolicitacaoReaberturaCaixaService {
         SolicitacaoReaberturaCaixa solicitacaoReaberturaCaixa = solicitacaoReaberturaCaixaMapper
                 .toEntityRequisicao(solicitacaoReaberturaDTO);
 
-        solicitacaoReaberturaCaixa.setSolicitante(utilitariosParaCaixa.getUsuarioLogado());
-        solicitacaoReaberturaCaixa.setDataSolicitacao(LocalDate.now());
-        solicitacaoReaberturaCaixa.setStatusReabertura(StatusSolicitacao.PENDENTE);
-        solicitacaoReaberturaCaixa.setCaixa(caixa);
-        SolicitacaoReaberturaCaixa novaSolicitacaoReaberturaCaixa = solicitacaoReaberturaCaixaRepository
-                .save(solicitacaoReaberturaCaixa);
+        Usuario usuario = utilitariosParaCaixa.getUsuarioLogado();
 
-        return solicitacaoReaberturaCaixaMapper.toDTORequisicao(novaSolicitacaoReaberturaCaixa);
+        if(utilitariosParaCaixa.isAdmin(usuario)){
+            solicitacaoReaberturaCaixa.setStatusReabertura(StatusSolicitacao.APROVADO);
+            caixaService.reabrirCaixa(caixa.getId());
+        }
+        else {
+            solicitacaoReaberturaCaixa.setStatusReabertura(StatusSolicitacao.PENDENTE);
+        }
+
+            solicitacaoReaberturaCaixa.setSolicitante(usuario);
+            solicitacaoReaberturaCaixa.setDataSolicitacao(LocalDate.now());
+            solicitacaoReaberturaCaixa.setCaixa(caixa);
+            SolicitacaoReaberturaCaixa novaSolicitacaoReaberturaCaixa = solicitacaoReaberturaCaixaRepository
+                    .save(solicitacaoReaberturaCaixa);
+
+            return solicitacaoReaberturaCaixaMapper.toDTORequisicao(novaSolicitacaoReaberturaCaixa);
+
     }
 
     @Transactional
@@ -84,6 +95,10 @@ public class SolicitacaoReaberturaCaixaService {
        SolicitacaoReaberturaCaixa solicitacaoReabertura = utilitariosGerais
                .buscarEntidadeId(solicitacaoReaberturaCaixaRepository,id,"Solicitacao Abertura Caixa");
 
+       if (solicitacaoReabertura.getStatusReabertura().equals(StatusSolicitacao.APROVADO) ||
+           solicitacaoReabertura.getStatusReabertura().equals(StatusSolicitacao.NEGADO)){
+           throw new MensagemException("Essa solicitação já foi respondida");
+       }
 
         solicitacaoReabertura.setStatusReabertura(respostaSolicitacaoReaberturaDTO.getStatusReabertura());
         solicitacaoReabertura.setDataResposta(LocalDate.now());

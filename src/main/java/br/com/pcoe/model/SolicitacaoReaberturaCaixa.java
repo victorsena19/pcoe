@@ -38,7 +38,7 @@ public class SolicitacaoReaberturaCaixa implements Serializable {
     @ManyToOne(cascade = CascadeType.MERGE)
     private Usuario solicitante;
 
-    @JsonManagedReference("movimentador")
+    @JsonManagedReference("administrador")
     @ManyToOne(cascade = CascadeType.MERGE)
     private Usuario administrador;
 }
