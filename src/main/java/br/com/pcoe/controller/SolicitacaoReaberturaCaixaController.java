@@ -4,7 +4,6 @@ import br.com.pcoe.dto.RequisicaoSolicitacaoReaberturaDTO;
 import br.com.pcoe.dto.RespostaSolicitacaoReaberturaDTO;
 import br.com.pcoe.enums.StatusSolicitacao;
 import br.com.pcoe.service.SolicitacaoReaberturaCaixaService;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +38,8 @@ public class SolicitacaoReaberturaCaixaController {
     @PostMapping
     public ResponseEntity<RequisicaoSolicitacaoReaberturaDTO> solicitarReaberturaCaixa(
             @RequestBody RequisicaoSolicitacaoReaberturaDTO solicitacaoReaberturaDTO){
-        return ResponseEntity.status(HttpStatusCode.valueOf(201))
-                .body(solicitacaoReaberturaCaixaService.solicitarReaberturaCaixa(solicitacaoReaberturaDTO));
+        solicitacaoReaberturaCaixaService.processaReaberturaCaixas(solicitacaoReaberturaDTO);
+        return ResponseEntity.ok().build();
 
     }
 

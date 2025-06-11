@@ -59,7 +59,7 @@ public class SolicitacaoReaberturaCaixaService {
     }
 
     @Transactional
-    public RequisicaoSolicitacaoReaberturaDTO solicitarReaberturaCaixa(
+    private void solicitarReaberturaCaixa(
             RequisicaoSolicitacaoReaberturaDTO solicitacaoReaberturaDTO){
 
         Caixa caixa = utilitariosGerais.buscarEntidadeId(caixaRepository,
@@ -69,23 +69,41 @@ public class SolicitacaoReaberturaCaixaService {
         SolicitacaoReaberturaCaixa solicitacaoReaberturaCaixa = solicitacaoReaberturaCaixaMapper
                 .toEntityRequisicao(solicitacaoReaberturaDTO);
 
-        Usuario usuario = utilitariosParaCaixa.getUsuarioLogado();
-
-        if(utilitariosParaCaixa.isAdmin(usuario)){
-            solicitacaoReaberturaCaixa.setStatusReabertura(StatusSolicitacao.APROVADO);
-            caixaService.reabrirCaixa(caixa.getId());
-        }
-        else {
             solicitacaoReaberturaCaixa.setStatusReabertura(StatusSolicitacao.PENDENTE);
-        }
-
-            solicitacaoReaberturaCaixa.setSolicitante(usuario);
+            solicitacaoReaberturaCaixa.setSolicitante(utilitariosParaCaixa.getUsuarioLogado());
             solicitacaoReaberturaCaixa.setDataSolicitacao(LocalDate.now());
             solicitacaoReaberturaCaixa.setCaixa(caixa);
             SolicitacaoReaberturaCaixa novaSolicitacaoReaberturaCaixa = solicitacaoReaberturaCaixaRepository
                     .save(solicitacaoReaberturaCaixa);
 
-            return solicitacaoReaberturaCaixaMapper.toDTORequisicao(novaSolicitacaoReaberturaCaixa);
+        solicitacaoReaberturaCaixaMapper.toDTORequisicao(novaSolicitacaoReaberturaCaixa);
+
+    }
+
+    /**
+     * Valida */
+    @Transactional
+    public void processaReaberturaCaixas(RequisicaoSolicitacaoReaberturaDTO dto){
+        Caixa caixaExistente = utilitariosGerais.buscarEntidadeId(caixaRepository,
+                dto.getCaixa().getId(),
+                "Caixa");
+        Usuario usuario = utilitariosParaCaixa.getUsuarioLogado();
+
+        //Verificar se é mesmo usuario que criou o caixa
+        boolean mesmoUsuario = usuario.getId().equals(caixaExistente.getUsuario().getId());
+
+        //Verificar se é mesmo dia
+        boolean mesmoDia = caixaExistente.getData().equals(LocalDate.now());
+
+        boolean podeReabrir = utilitariosParaCaixa.isAdmin(usuario) || (mesmoUsuario && mesmoDia);
+
+        //Verifica se usuario é Admin ou é mesmo usuario e mesmo dia
+        if (podeReabrir){
+            caixaService.reabrirCaixa(caixaExistente.getId());
+        }
+        else{
+            solicitarReaberturaCaixa(dto);
+        }
 
     }
 

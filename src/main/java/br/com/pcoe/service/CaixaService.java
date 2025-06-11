@@ -228,20 +228,6 @@ public class CaixaService {
         if (caixaExistente.isAberto()){
             throw new MensagemException("Não pode reabrir um caixa que já está aberto!");
         }
-        //Pega Usuario logado
-        Usuario usuario = utilitarios.getUsuarioLogado();
-
-        //Verificar se é mesmo usuario que criou o caixa
-        boolean isMesmoUsuario = usuario.getId().equals(caixaExistente.getUsuario().getId());
-
-        //Verificar se é mesmo dia
-        boolean isMesmoDia = caixaExistente.getData().equals(LocalDate.now());
-
-        //Verifica se usuario é Admin ou é mesmo usuario e mesmo dia
-        if (!(utilitarios.isAdmin(usuario) || (isMesmoUsuario && isMesmoDia))){
-            throw new RuntimeException(MensagensErrosGenericas.PERMISSAOUSUARIONEGADA.format("reabrir"));
-        }
-
         caixaExistente.setAberto(true);
 
         Caixa caixaSalvo = caixaRepository.save(caixaExistente);
