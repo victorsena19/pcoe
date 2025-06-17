@@ -36,6 +36,13 @@ public class EspecialidadeController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(path = "/nome")
+    public ResponseEntity<EspecialidadeDTO> listarEspecialidadeId(@RequestParam String nome){
+        EspecialidadeDTO registro = especialidadeService.listarEspecialidadePorNome(nome);
+        return ResponseEntity.ok().body(registro);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<EspecialidadeDTO> cadastrarEspecialidade(@RequestBody EspecialidadeDTO especialidade){
         EspecialidadeDTO novoEspecialidade = especialidadeService.cadastroEspecialidade(especialidade);

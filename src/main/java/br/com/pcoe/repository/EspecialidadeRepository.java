@@ -11,4 +11,6 @@ public interface EspecialidadeRepository extends JpaRepository<Especialidade, UU
 
     boolean existsByNomeIgnoreCase(String nome);
 
+    Especialidade findByNomeIgnoreCase(String nome);
+
 }

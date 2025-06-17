@@ -40,6 +40,12 @@ public class EspecialidadeService {
         return especialidadeMapper.toDTO(especialidade);
     }
 
+    @Transactional(readOnly = true)
+    public EspecialidadeDTO listarEspecialidadePorNome(String nome) {
+        Especialidade especialidade = especialidadeRepository.findByNomeIgnoreCase(nome);
+        return especialidadeMapper.toDTO(especialidade);
+    }
+
     @Transactional
     public EspecialidadeDTO cadastroEspecialidade(EspecialidadeDTO especialidadeDTO) {
         boolean especialidadeJaExiste  = especialidadeRepository.existsByNomeIgnoreCase(especialidadeDTO.getNome());
